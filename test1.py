@@ -1,18 +1,16 @@
 import tkinter as tk
 
+def zmien_nazwe_przycisku():
+    aktualna_nazwa = przycisk.cget("text")
+    
+    # Zamień nazwę przycisku na inną
+    nowa_nazwa = "Nowa Nazwa" if aktualna_nazwa != "Nowa Nazwa" else "Stara Nazwa"
+    przycisk.config(text=nowa_nazwa)
+
 root = tk.Tk()
 
-frame1 = tk.Frame(root, width=200, height=200, bg='red')
-frame2 = tk.Frame(root, width=200, height=200, bg='green')
-frame3 = tk.Frame(root, width=200, height=200, bg='blue')
-
-# Ustawienie orientacji na HORIZONTAL
-paned_window = tk.PanedWindow(root, orient=tk.HORIZONTAL)
-
-paned_window.add(frame1)
-paned_window.add(frame2)
-paned_window.add(frame3)
-
-paned_window.pack(fill=tk.BOTH, expand=True)
+# Tworzenie przycisku
+przycisk = tk.Button(root, text="Stara Nazwa", command=zmien_nazwe_przycisku)
+przycisk.pack(pady=20)
 
 root.mainloop()
