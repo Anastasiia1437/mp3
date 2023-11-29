@@ -49,12 +49,12 @@ class SimpleMP3Player:
             self.playing = True
 
     def stop(self):
-        pygame.mixer.music.pause()
-        self.playing = False
-
-    def resume(self):
-        pygame.mixer.music.unpause()
-        self.playing = True
+        if self.playing:
+            pygame.mixer.music.pause()
+            self.playing = False
+        else:
+            pygame.mixer.music.unpause()
+            self.playing = True
 
     def set_volume(self, volume):
         pygame.mixer.music.set_volume(float(volume) / 100)
