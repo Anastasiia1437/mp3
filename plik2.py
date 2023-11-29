@@ -33,7 +33,7 @@ class SimpleMP3Player:
         self.volume_slider = Scale(master, from_=0, to=100, resolution=1, orient=HORIZONTAL, command=self.set_volume,
                                    bg="black", fg="white", troughcolor="black", highlightbackground="black")
         self.volume_slider.set(50)  # Domyślna głośność
-        self.volume_slider.grid(column=0, column=1, column=2 , row=4)
+        self.volume_slider.grid(column=1, row=4)
 
     def select_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("MP3 files", "*.mp3")])
@@ -61,6 +61,8 @@ class SimpleMP3Player:
 
 if __name__ == "__main__":
     window = Tk()
+    window2 = Tk()
+    widnow3 = Tk()
     window.configure(bg="Pink")
     mp3_player = SimpleMP3Player(window)
     window.mainloop()
