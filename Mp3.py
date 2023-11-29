@@ -2,5 +2,5 @@ from tkinter import *
 import subprocess
 import os
 window = Tk()
-os.system
+os.system.
 window.mainloop()
