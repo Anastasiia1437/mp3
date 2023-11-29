@@ -32,7 +32,7 @@ class SimpleMP3Player:
 
         self.volume_slider = Scale(master, from_=0, to=100, resolution=1, orient=HORIZONTAL, command=self.set_volume,
                                    bg="black", fg="white", troughcolor="black", highlightbackground="black")
-        self.volume_slider.set(50)  # Domyślna głośność
+        self.volume_slider.set(20)  # Domyślna głośność
         self.volume_slider.grid(column=1, row=4)
 
     def select_file(self):
