@@ -1,6 +1,3 @@
-
-
-
 import os
 import pygame
 from tkinter import Tk, filedialog, Label, Scale, Button, Frame, Listbox, END, HORIZONTAL, VERTICAL
