@@ -1,8 +1,9 @@
 import os
 import pygame
-from tkinter import Tk, filedialog, Label, Scale, Button, Frame, Listbox, END, HORIZONTAL, ttk
-from definicje import play, play_next, play_prev, play_selected, set_volume, change_folder
+from tkinter import Tk, filedialog, Label, Scale, Button, Frame, Listbox, END, HORIZONTAL
 import time
+
+
 
 class SimpleMP3Player:
     def __init__(self, master):
@@ -14,10 +15,11 @@ class SimpleMP3Player:
 
         self.current_file = None
         self.playing = False
-        
+
         pygame.mixer.music.set_endevent(pygame.USEREVENT)
-# Frames po lewej
-        text_frame = Frame(master, bg="pink",pady=5)
+
+        # Frames po lewej
+        text_frame = Frame(master, bg="pink", pady=5)
         text_frame.grid(row=0, column=0, columnspan=3, sticky="nsew")
 
         anim_frame = Frame(master, bg="red")
@@ -31,10 +33,12 @@ class SimpleMP3Player:
 
         volume_frame = Frame(master, bg="brown")
         volume_frame.grid(row=4, column=0, columnspan=3, sticky="s")
-# Frame po prawej
+
+        # Frame po prawej
         List_frame = Frame(master, bg="black")
         List_frame.grid(row=0, column=3, rowspan=5, sticky="w")
-# Wybieranie folderu
+
+        # Wybieranie folderu
         self.folder_path = filedialog.askdirectory(title="Wybierz folder")
         if self.folder_path:
             print(f"\nZawartość folderu {self.folder_path}:")
@@ -50,32 +54,37 @@ class SimpleMP3Player:
                     pygame.mixer.music.load(self.current_mp3_file)
                     pygame.mixer.music.play()
                     self.playing = True
-                    self.label1 = Label(text_frame, text="Altualny plik:", bg="black", fg="green")
+                    self.label1 = Label(text_frame, text="Aktualny plik:", bg="black", fg="green")
                     self.label1.grid(row=0, column=0)
 
                     self.label2 = Label(text_frame, text=f"{self.mp3_files[self.current_index]}", bg="black", fg="green")
                     self.label2.grid(row=1, column=0)
 
-# Przyciski
-                    self.prev_button = Button(button_frame, text="<", command=self.play_prev, padx=15, pady=15, bg="gray", fg="black",)
+                    # Przyciski
+                    self.prev_button = Button(button_frame, text="<", command=self.play_prev, padx=15, pady=15,
+                                              bg="gray", fg="black")
                     self.prev_button.grid(row=1, column=0, sticky="ew")
 
-                    self.play_button = Button(button_frame, text = "II", command=self.play, padx=15, pady=15, bg="gray", fg="black",)
+                    self.play_button = Button(button_frame, text="II", command=self.play, padx=15, pady=15,
+                                              bg="gray", fg="black")
                     self.play_button.grid(row=1, column=1, sticky="ew")
 
-                    self.next_button = Button(button_frame, text=">", command=self.play_next, padx=15, pady=15, bg="gray", fg="black",)
+                    self.next_button = Button(button_frame, text=">", command=self.play_next, padx=15, pady=15,
+                                              bg="gray", fg="black")
                     self.next_button.grid(row=1, column=2, sticky="ew")
 
                     self.volume_label = Label(volume_frame, text="Głośność:", bg="pink", fg="Black")
                     self.volume_label.grid(row=0, column=0)
-# Dźwięk
+
+                    # Dźwięk
                     volume_slider = Scale(volume_frame, from_=0, to=100, resolution=1, orient=HORIZONTAL,
-                                               command=self.set_volume, bg="black", fg="green", troughcolor="black",
-                                               highlightbackground="black", width="15", length="326")
+                                          command=self.set_volume, bg="black", fg="green", troughcolor="black",
+                                          highlightbackground="black", width="15", length="326")
                     volume_slider.set(50)  # Domyślna głośność
                     volume_slider.grid(row=1, column=0, sticky="nsew")
 
-                    self.listbox = Listbox(List_frame, selectmode="SINGLE", exportselection=0, bg="black", foreground="green", width="56", height="28")
+                    self.listbox = Listbox(List_frame, selectmode="SINGLE", exportselection=0, bg="black",
+                                           foreground="green", width="56", height="28")
                     self.listbox.pack()
 
                     for mp3_file in self.mp3_files:
@@ -83,24 +92,14 @@ class SimpleMP3Player:
 
                     self.listbox.bind("<Double-Button-1>", self.play_selected)
 
-                    library = Button(List_frame, text="Zmień folder", command=self.change_folder, bg="gray", fg="black", padx="10", pady="5")
+                    library = Button(List_frame, text="Zmień folder", command=self.change_folder, bg="gray",
+                                     fg="black", padx="10", pady="5")
                     library.pack()
 
                 else:
                     print("Brak plików MP3 w folderze.")
             except OSError as e:
                 print(f"Wystąpił błąd podczas odczytu zawartości folderu: {e}")
-# Definicje
-
-    
-    
-    def play_prev(self):
-        self.current_index = (self.current_index - 1) % len(self.mp3_files)
-        self.play_current()
-
-    def play_next(self):
-        self.current_index = (self.current_index + 1) % len(self.mp3_files)
-        self.play_current()
 
     def play_current(self):
         self.current_mp3_file = os.path.join(self.folder_path, self.mp3_files[self.current_index])
@@ -113,6 +112,7 @@ class SimpleMP3Player:
         if selected_index:
             self.current_index = selected_index[0]
             self.play_current()
+
     def play(self):
         if self.playing:
             pygame.mixer.music.pause()
@@ -120,16 +120,43 @@ class SimpleMP3Player:
         else:
             pygame.mixer.music.unpause()
             self.playing = True
-            
-            pygame.event.clear()
-            pygame.event.set_allowed(pygame.USEREVENT)
-            pygame.event.set_allowed(pygame.QUIT)
-            
         aktualna_nazwa = self.play_button.cget("text")
         nowa_nazwa = "▷" if aktualna_nazwa != "▷" else "II"
         self.play_button.config(text=nowa_nazwa)
-        
-    def mainloop(self):
+
+    def set_volume(self, volume):
+        pygame.mixer.music.set_volume(float(volume) / 100)
+
+    def play_next(self):
+        self.current_index = (self.current_index + 1) % len(self.mp3_files)
+        self.play_current()
+
+    def play_prev(self):
+        self.current_index = (self.current_index - 1) % len(self.mp3_files)
+        self.play_current()
+
+    def change_folder(self):
+        folder_path = filedialog.askdirectory(title="Wybierz folder")
+        if folder_path:
+            print(f"\nZawartość folderu {folder_path}:")
+            try:
+                files = os.listdir(folder_path)
+                for file in files:
+                    print(file)
+                mp3_files = [f for f in files if f.lower().endswith(".mp3")]
+                if mp3_files:
+                    self.current_index = 0
+                    self.current_mp3_file = os.path.join(folder_path, mp3_files[self.current_index])
+                    pygame.mixer.init()
+                    pygame.mixer.music.load(self.current_mp3_file)
+                    pygame.mixer.music.play()
+                    self.playing = True
+                else:
+                    print("Brak plików MP3 w folderze.")
+            except OSError as e:
+                print(f"Wystąpił błąd podczas odczytu zawartości folderu: {e}")
+
+    def mainloop(self, event):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.USEREVENT:
@@ -138,36 +165,9 @@ class SimpleMP3Player:
             self.master.update()
             time.sleep(0.01)
 
-    def set_volume(self, volume):
-        pygame.mixer.music.set_volume(float(volume) / 100)
-
-    def change_folder(self):
-        folder_path = filedialog.askdirectory(title="Wybierz folder")
-        if folder_path:
-                print(f"\nZawartość folderu {folder_path}:")
-                try:
-                    files = os.listdir(folder_path)
-                    for file in files:
-                        print(file)
-                    mp3_files = [f for f in files if f.lower().endswith(".mp3")]
-                    if mp3_files:
-                        current_index = 0
-                        current_mp3_file = os.path.join(folder_path, mp3_files[current_index])
-                        pygame.mixer.init()
-                        pygame.mixer.music.load(current_mp3_file)
-                        pygame.mixer.music.play()
-                        self.playing = True
-                    else:
-                        print("Brak plików MP3 w folderze.")
-                except OSError as e:
-                    print(f"Wystąpił błąd podczas odczytu zawartości folderu: {e}")
-
-    #if self.playing == False:
-    #    play_next()
-
 
 if __name__ == "__main__":
     window = Tk()
     window.configure(bg="Pink")
     mp3_player = SimpleMP3Player(window)
-    window.mainloop()
+    mp3_player.mainloop()
