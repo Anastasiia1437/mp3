@@ -1,8 +1,8 @@
 import os
 import pygame
 from tkinter import Tk, filedialog, Label, Scale, Button, Frame, Listbox, END, HORIZONTAL, ttk
-from definicje import play, play_next, play_prev, play_selected, set_volume, change_folder
 import time
+from mutagen.mp3 import MP3
 
 class SimpleMP3Player:
     def __init__(self, master):
@@ -14,6 +14,10 @@ class SimpleMP3Player:
 
         self.current_file = None
         self.playing = False
+        self.looping=False
+        self.folder_path = filedialog.askdirectory(title="Wybierz folder")
+        pygame.mixer.init()
+        self.songindex = -1
         
         pygame.mixer.music.set_endevent(pygame.USEREVENT)
 # Frames po lewej
@@ -34,8 +38,7 @@ class SimpleMP3Player:
 # Frame po prawej
         List_frame = Frame(master, bg="black")
         List_frame.grid(row=0, column=3, rowspan=5, sticky="w")
-# Wybieranie folderu
-        self.folder_path = filedialog.askdirectory(title="Wybierz folder")
+
         if self.folder_path:
             print(f"\nZawartość folderu {self.folder_path}:")
             try:
@@ -96,6 +99,16 @@ class SimpleMP3Player:
     
     def play_prev(self):
         self.current_index = (self.current_index - 1) % len(self.mp3_files)
+        self.songindex -= 1
+        if self.songindex < -len(self.folder_path):
+            self.songindex = len(self.folder_path) -1
+        self.audio = self.folder_path[self.songindex]
+        pygame.mixer.music.load(self.audio)
+        self.info = MP3(self.audio)
+        self.minutes, self.seconds = convert(self.info.info.length)
+        self.minutes = round(self.minutes)
+        self.seconds = round(self.seconds)
+#tu nie skończone !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         self.play_current()
 
     def play_next(self):
@@ -113,6 +126,7 @@ class SimpleMP3Player:
         if selected_index:
             self.current_index = selected_index[0]
             self.play_current()
+
     def play(self):
         if self.playing:
             pygame.mixer.music.pause()
@@ -120,10 +134,6 @@ class SimpleMP3Player:
         else:
             pygame.mixer.music.unpause()
             self.playing = True
-            
-            pygame.event.clear()
-            pygame.event.set_allowed(pygame.USEREVENT)
-            pygame.event.set_allowed(pygame.QUIT)
             
         aktualna_nazwa = self.play_button.cget("text")
         nowa_nazwa = "▷" if aktualna_nazwa != "▷" else "II"
