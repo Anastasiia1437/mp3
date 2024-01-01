@@ -53,11 +53,19 @@ class SimpleMP3Player:
                     pygame.mixer.music.load(self.current_mp3_file)
                     pygame.mixer.music.play()
                     self.playing = True
+                    self.nazwa_pliku = f"{self.mp3_files[self.current_index]}"
                     self.label1 = Label(text_frame, text="Altualny plik:", bg="black", fg="green")
                     self.label1.grid(row=0, column=0)
 
-                    self.label2 = Label(text_frame, text=f"{self.mp3_files[self.current_index]}", bg="black", fg="green")
+                    self.label2 = Label(text_frame, text=self.nazwa_pliku, bg="black", fg="green")
                     self.label2.grid(row=1, column=0)
+                    
+                    self.progress = Scale(tbar_frame, from_=0, to=100, orient=HORIZONTAL, length=420, sliderlength=20, showvalue=0, bg="#717291", highlightthickness=0, troughcolor="#525269")
+                    self.progress.grid(column=0, row=1, columnspan=3, pady=10)
+                    self.currenttime = Label(tbar_frame, text="00:00",bg="#717291")
+                    self.currenttime.grid(column=0, row=2)
+                    self.totaltime = Label(tbar_frame, text="00:00",bg="#717291")
+                    self.totaltime.grid(column=2, row=2)
 
 # Przyciski
                     self.prev_button = Button(button_frame, text="<", command=self.play_prev, padx=15, pady=15, bg="gray", fg="black",)
@@ -86,9 +94,6 @@ class SimpleMP3Player:
 
                     self.listbox.bind("<Double-Button-1>", self.play_selected)
 
-                    library = Button(List_frame, text="Zmień folder", command=self.change_folder, bg="gray", fg="black", padx="10", pady="5")
-                    library.pack()
-
                 else:
                     print("Brak plików MP3 w folderze.")
             except OSError as e:
@@ -100,31 +105,106 @@ class SimpleMP3Player:
     def play_prev(self):
         self.current_index = (self.current_index - 1) % len(self.mp3_files)
         self.songindex -= 1
-        if self.songindex < -len(self.folder_path):
-            self.songindex = len(self.folder_path) -1
-        self.audio = self.folder_path[self.songindex]
-        pygame.mixer.music.load(self.audio)
-        self.info = MP3(self.audio)
-        self.minutes, self.seconds = convert(self.info.info.length)
+        if self.songindex < -len(self.mp3_files):
+            self.songindex = len(self.mp3_files) - 1
+        self.audio = os.path.join(self.folder_path, self.mp3_files[self.songindex])
+        pygame.mixer.music.load(self.current_mp3_file)
+        self.info = MP3(self.current_mp3_file)
+        self.minutes, self.seconds = self.convert(self.info.info.length)
         self.minutes = round(self.minutes)
         self.seconds = round(self.seconds)
-#tu nie skończone !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        self.totaltime.config(text=str(self.minutes) + ":" + str(self.seconds))
+        self.timer = 0
+        self.currenttime.config(text="0:00")
+        self.playing = False
+        self.played = False
+        self.progress.set(0)
+        self.progress.config(to=self.info.info.length)
         self.play_current()
 
     def play_next(self):
         self.current_index = (self.current_index + 1) % len(self.mp3_files)
+        if not self.looping:
+            self.songindex += 1
+        try:
+            self.audio = os.path.join(self.folder_path, self.mp3_files[self.songindex])
+        except IndexError:
+            self.songindex = 0
+            self.audio = os.path.join(self.folder_path, self.mp3_files[self.songindex])
+        pygame.mixer.music.load(self.current_mp3_file)
+        self.info = MP3(self.current_mp3_file)
+        self.minutes, self.seconds = self.convert(self.info.info.length)
+        self.minutes = round(self.minutes)
+        self.seconds = round(self.seconds)
+        self.totaltime.config(text=str(self.minutes) + ":" + str(self.seconds))
+        self.timer = 0
+        self.currenttime.config(text="0:00")
+        self.playing = False
+        self.played = False
+        self.progress.set(0)
+        self.progress.config(to=self.info.info.length)
         self.play_current()
 
     def play_current(self):
+        self.current_index = (self.current_index) % len(self.mp3_files)
         self.current_mp3_file = os.path.join(self.folder_path, self.mp3_files[self.current_index])
         pygame.mixer.music.load(self.current_mp3_file)
         pygame.mixer.music.play()
         self.label2.config(text=f"{self.mp3_files[self.current_index]}")
+        self.playing = True
+        self.played = False
+        self.progress.set(0)
+        self.progress.config(to=self.info.info.length)
+        self.update_timebar()
+    
+    def convert(self,seconds):
+        seconds %= 3600
+        mins = seconds // 60
+        seconds %= 60
+        return(mins, seconds)
+    
+    def loop(self):
+        if not self.looping:
+            self.looping = True
+        else:
+            self.looping = False
+        self.loopStatus.config(text="looping: "+str(self.looping))
+    
+    def update_timebar(self):
+        if pygame.mixer.music.get_busy() and self.playing:
+            current_time_ms = pygame.mixer.music.get_pos()
+            current_time_sec = current_time_ms / 1000
+
+            minutes, seconds = divmod(current_time_sec, 60)
+            total_length = self.info.info.length
+            total_minutes, total_seconds = divmod(total_length, 60)
+
+            self.currenttime.config(text=f"{int(minutes):02}:{int(seconds):02}")
+            self.totaltime.config(text=f"{int(total_minutes):02}:{int(total_seconds):02}")
+            self.progress.set(current_time_sec)
+
+            if not self.played:
+                self.progress.after(1000, self.update_timebar)
+
+
 
     def play_selected(self, event):
         selected_index = self.listbox.curselection()
         if selected_index:
             self.current_index = selected_index[0]
+            self.current_mp3_file = os.path.join(self.folder_path, self.mp3_files[self.current_index])
+            pygame.mixer.music.load(self.current_mp3_file)
+            self.info = MP3(self.current_mp3_file)
+            self.minutes, self.seconds = self.convert(self.info.info.length)
+            self.minutes = round(self.minutes)
+            self.seconds = round(self.seconds)
+            self.totaltime.config(text=str(self.minutes) + ":" + str(self.seconds))
+            self.timer = 0
+            self.currenttime.config(text="0:00")
+            self.playing = False
+            self.played = False
+            self.progress.set(0)
+            self.progress.config(to=self.info.info.length)
             self.play_current()
 
     def play(self):
@@ -138,6 +218,15 @@ class SimpleMP3Player:
         aktualna_nazwa = self.play_button.cget("text")
         nowa_nazwa = "▷" if aktualna_nazwa != "▷" else "II"
         self.play_button.config(text=nowa_nazwa)
+        
+    def set_position(self, value):
+        if self.playing:
+            pygame.mixer.music.pause()
+            pygame.mixer.music.set_pos(value)
+            pygame.mixer.music.unpause()
+            self.playing = True
+            self.played = False
+            self.update_timebar()
         
     def mainloop(self):
         while True:
