@@ -1,6 +1,6 @@
 import os
 import pygame
-from tkinter import Tk, filedialog, Label, Scale, Button, Frame, Listbox, END, HORIZONTAL, ttk
+from tkinter import Tk, filedialog, Label, Scale, Button, Frame, Listbox, END, HORIZONTAL, ttk, messagebox
 import time
 from mutagen.mp3 import MP3
 
@@ -107,7 +107,9 @@ class SimpleMP3Player:
 
                 else:
                     print("Brak plików MP3 w folderze.")
+                    messagebox.showerror("Błąd","Nie znaleziono plików MP3")
                     window.destroy()
+                    
             except OSError as e:
                 print(f"Wystąpił błąd podczas odczytu zawartości folderu: {e}")
                 window.destroy()
