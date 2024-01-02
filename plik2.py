@@ -8,7 +8,7 @@ class SimpleMP3Player:
     def __init__(self, master):
         self.master = master
         master.title("Odtwarzacz MP3")
-        master.geometry("679x500")
+        master.geometry("779x500")
         master.configure(bg="black")
         master.resizable(False, False)
 
@@ -21,19 +21,19 @@ class SimpleMP3Player:
         
         pygame.mixer.music.set_endevent(pygame.USEREVENT)
 # Frames po lewej
-        text_frame = Frame(master, bg="pink",pady=5)
+        text_frame = Frame(master, bg="black",pady=5)
         text_frame.grid(row=0, column=0, columnspan=3, sticky="nsew")
 
-        anim_frame = Frame(master, bg="red")
+        anim_frame = Frame(master, bg="black")
         anim_frame.grid(row=1, column=0, columnspan=3, sticky="nsew")
 
-        tbar_frame = Frame(master, bg="yellow")
+        tbar_frame = Frame(master, bg="black")
         tbar_frame.grid(row=2, column=0, columnspan=3, sticky="nsew")
 
-        button_frame = Frame(master, bg="blue", padx=107, pady=20)
+        button_frame = Frame(master, bg="black", padx=107, pady=20)
         button_frame.grid(row=3, column=0, columnspan=3, sticky="s")
 
-        volume_frame = Frame(master, bg="brown")
+        volume_frame = Frame(master, bg="black")
         volume_frame.grid(row=4, column=0, columnspan=3, sticky="s")
 # Frame po prawej
         List_frame = Frame(master, bg="black")
