@@ -1,7 +1,6 @@
 import os
 import pygame
 from tkinter import Tk, filedialog, Label, Scale, Button, Frame, Listbox, END, HORIZONTAL, ttk
-from definicje import play, play_next, play_prev, play_selected, set_volume, change_folder
 import time
 
 class SimpleMP3Player:
@@ -120,10 +119,6 @@ class SimpleMP3Player:
         else:
             pygame.mixer.music.unpause()
             self.playing = True
-            
-            pygame.event.clear()
-            pygame.event.set_allowed(pygame.USEREVENT)
-            pygame.event.set_allowed(pygame.QUIT)
             
         aktualna_nazwa = self.play_button.cget("text")
         nowa_nazwa = "▷" if aktualna_nazwa != "▷" else "II"
