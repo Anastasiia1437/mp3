@@ -112,6 +112,7 @@ class SimpleMP3Player:
                     
             except OSError as e:
                 print(f"Wystąpił błąd podczas odczytu zawartości folderu: {e}")
+                messagebox.showerror("Błąd","Nie udało się wczytać zawartości folderu")
                 window.destroy()
 # Definicje
 
@@ -262,6 +263,9 @@ class SimpleMP3Player:
 
             self.master.update()
             time.sleep(0.01)
+    
+    def set_volume(self, volume):
+        pygame.mixer.music.set_volume(float(volume)/100)
 
 if __name__ == "__main__":
     window = Tk()
