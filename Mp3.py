@@ -107,8 +107,10 @@ class SimpleMP3Player:
 
                 else:
                     print("Brak plików MP3 w folderze.")
+                    window.destroy()
             except OSError as e:
                 print(f"Wystąpił błąd podczas odczytu zawartości folderu: {e}")
+                window.destroy()
 # Definicje
 
     
@@ -258,34 +260,6 @@ class SimpleMP3Player:
 
             self.master.update()
             time.sleep(0.01)
-
-    def set_volume(self, volume):
-        pygame.mixer.music.set_volume(float(volume) / 100)
-
-    def change_folder(self):
-        folder_path = filedialog.askdirectory(title="Wybierz folder")
-        if folder_path:
-                print(f"\nZawartość folderu {folder_path}:")
-                try:
-                    files = os.listdir(folder_path)
-                    for file in files:
-                        print(file)
-                    mp3_files = [f for f in files if f.lower().endswith(".mp3")]
-                    if mp3_files:
-                        current_index = 0
-                        current_mp3_file = os.path.join(folder_path, mp3_files[current_index])
-                        pygame.mixer.init()
-                        pygame.mixer.music.load(current_mp3_file)
-                        pygame.mixer.music.play()
-                        self.playing = True
-                    else:
-                        print("Brak plików MP3 w folderze.")
-                except OSError as e:
-                    print(f"Wystąpił błąd podczas odczytu zawartości folderu: {e}")
-
-    #if self.playing == False:
-    #    play_next()
-
 
 if __name__ == "__main__":
     window = Tk()
